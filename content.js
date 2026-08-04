@@ -406,7 +406,7 @@
           </svg>
         </div>
         <h1>Subreddit Restricted</h1>
-        <p class="rnb-reason-desc">${lastBlockReason}</p>
+        <p class="rnb-reason-desc"></p>
         <div class="rnb-btn-group">
           <a href="https://www.reddit.com/" class="rnb-btn rnb-btn-primary">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -429,6 +429,11 @@
           </a>
         </div>
       `;
+
+      const reasonEl = overlay.querySelector('.rnb-reason-desc');
+      if (reasonEl) {
+        reasonEl.textContent = lastBlockReason || '';
+      }
 
       // Always mount directly to documentElement root so body transform/containment never clips it
       if (overlay.parentNode !== document.documentElement) {

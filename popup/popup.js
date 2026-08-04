@@ -82,10 +82,17 @@ document.addEventListener('DOMContentLoaded', () => {
     blockedSubreddits.forEach((sub, index) => {
       const tag = document.createElement('div');
       tag.className = 'tag';
-      tag.innerHTML = `
-        r/${sub}
-        <span class="remove-btn" data-index="${index}">&times;</span>
-      `;
+
+      const textSpan = document.createElement('span');
+      textSpan.textContent = `r/${sub}`;
+      tag.appendChild(textSpan);
+
+      const removeBtn = document.createElement('span');
+      removeBtn.className = 'remove-btn';
+      removeBtn.setAttribute('data-index', index);
+      removeBtn.textContent = ' ×';
+      tag.appendChild(removeBtn);
+
       subTagsContainer.appendChild(tag);
     });
 

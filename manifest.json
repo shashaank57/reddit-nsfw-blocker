@@ -5,8 +5,7 @@
   "description": "Block NSFW subreddits, posts, and adult content on Reddit for Chrome and Firefox.",
   "permissions": [
     "storage",
-    "activeTab",
-    "*://*.reddit.com/*"
+    "activeTab"
   ],
   "host_permissions": [
     "*://*.reddit.com/*"
@@ -52,7 +51,10 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "reddit-nsfw-blocker@extension.local",
-      "strict_min_version": "109.0"
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
     }
   }
 }

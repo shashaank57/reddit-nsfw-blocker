@@ -5,6 +5,7 @@
   "main": "background.js",
   "scripts": {
     "test": "node tests/test-runner.js",
+    "build": "node build.js",
     "generate-icons": "node render-pro-icon.js",
     "generate-experimental": "node render-experimental-icon.js"
   },
