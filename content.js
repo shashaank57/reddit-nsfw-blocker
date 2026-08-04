@@ -245,11 +245,21 @@
 
     const pathname = window.location.pathname.toLowerCase();
     const isSearchOrFeed = pathname === '/' || pathname.includes('/search') || pathname.includes('/r/all') || pathname.includes('/r/popular') || pathname.startsWith('/user/');
+    const isSinglePostPage = pathname.includes('/comments/') || pathname.includes('/post/');
 
     // If on a feed or search page, do not trigger full page block. Instead, filter individual search/feed posts.
     if (isSearchOrFeed) {
       if (settings.strictMode) {
         filterFeedPosts();
+      }
+      return;
+    }
+
+    // On single post pages on SFW subreddits, do not trigger full page block unless Strict Mode is enabled or Subreddit header is 18+
+    if (isSinglePostPage && !settings.strictMode) {
+      const subHeader = document.querySelector('shreddit-subreddit-header');
+      if (subHeader && (subHeader.hasAttribute('is-nsfw') || subHeader.getAttribute('is-nsfw') === 'true' || subHeader.hasAttribute('nsfw'))) {
+        triggerPageBlock('NSFW Subreddit detected (18+ content).');
       }
       return;
     }
