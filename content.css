@@ -30,6 +30,13 @@
   border: 1px solid rgba(255, 69, 0, 0.3) !important;
 }
 
+#rnb-nsfw-block-overlay .rnb-icon-container img {
+  width: 52px !important;
+  height: 52px !important;
+  object-fit: contain !important;
+  display: block !important;
+}
+
 #rnb-nsfw-block-overlay h1 {
   font-size: 2rem !important;
   margin: 0 0 12px 0 !important;

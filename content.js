@@ -397,14 +397,12 @@
     // Check if overlay element exists
     let overlay = document.getElementById('rnb-nsfw-block-overlay');
     if (!overlay) {
+      const logoUrl = chrome.runtime.getURL('icons-experimental/icon128.png');
       overlay = document.createElement('div');
       overlay.id = 'rnb-nsfw-block-overlay';
       overlay.innerHTML = `
         <div class="rnb-icon-container">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FF4500" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
-          </svg>
+          <img src="${logoUrl}" width="52" height="52" alt="Reddit NSFW Blocker Logo">
         </div>
         <h1>Subreddit Restricted</h1>
         <p class="rnb-reason-desc"></p>
