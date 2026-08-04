@@ -71,14 +71,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           return;
         }
 
-        // Exclude recovery subreddits that mention NSFW in their SFW description
-        const SFW_WHITELIST = ['nofap', 'pornfree', 'semenretention', 'selfimprovement'];
-        if (SFW_WHITELIST.includes(sub)) {
-          subCache.set(sub, false);
-          sendResponse({ isNSFW: false });
-          return;
-        }
-
         const data = await res.json();
         const isNSFW = Boolean(
           data?.data?.over18 ||

@@ -153,8 +153,6 @@
   }
 
   function checkURLAndAPI() {
-    if (isSFWWhitelistedSub()) return;
-
     const pathname = window.location.pathname.toLowerCase();
 
     // A. Check custom blocked subreddits from user settings
@@ -187,20 +185,13 @@
   function scanPage() {
     if (pageBlocked || !settings.enabled) return;
 
-    if (isSFWWhitelistedSub()) {
-      if (settings.strictMode) {
-        filterFeedPosts();
-      }
-      return;
-    }
-
-    // A. Check Meta Tags in <head>
+    // A. Check Meta Tags in <head> for adult page indicator
     const nsfwMeta = document.querySelector(
-      'meta[name="is-nsfw"], meta[property="og:rating"][content="adult"], meta[name="twitter:label1"][value="NSFW"]'
+      'meta[name="is-nsfw"], meta[property="og:rating"][content="adult"]'
     );
     if (nsfwMeta) {
-      const content = (nsfwMeta.getAttribute('content') || nsfwMeta.getAttribute('value') || '').toLowerCase();
-      if (content === 'true' || content === '1' || content === 'adult' || content === 'nsfw') {
+      const content = (nsfwMeta.getAttribute('content') || '').toLowerCase();
+      if (content === 'true' || content === '1' || content === 'adult') {
         triggerPageBlock('This page is marked as NSFW by Reddit.');
         return;
       }
@@ -220,7 +211,7 @@
       }
     }
 
-    // C. Check Exhaustive NSFW & Over18 Selectors across Shreddit and Old Reddit
+    // C. Check Subreddit-Level NSFW & Over18 Selectors across Shreddit and Old Reddit
     const pageNSFWSelectors = [
       'shreddit-app[over18]',
       'shreddit-app[is-nsfw]',
@@ -228,8 +219,6 @@
       'shreddit-subreddit-header[nsfw]',
       'shreddit-subreddit-header[is-nsfw]',
       'shreddit-subreddit-header[is-nsfw="true"]',
-      'shreddit-async-loader[name*="over18"]',
-      'shreddit-async-loader[name*="nsfw"]',
       'shreddit-experience-tree[over18]',
       'faceplate-modal[id*="over18"]',
       'faceplate-tracker[data-nsfw="true"]',
@@ -265,22 +254,17 @@
       return;
     }
 
-    // If viewing a dedicated post or subreddit page (not a feed), check for dedicated post NSFW badges
-    pageNSFWSelectors.push(
-      'shreddit-post[nsfw]',
-      'shreddit-post[is-nsfw]',
-      'shreddit-post[over18]',
-      'shreddit-post[is-nsfw="true"]',
-      '.thing.over18',
-      '.thing.nsfw',
-      '.over18.link'
-    );
-
+    // Evaluate subreddit-level selectors for full page block
     for (const selector of pageNSFWSelectors) {
       if (document.querySelector(selector)) {
-        triggerPageBlock('NSFW Subreddit or Post detected (18+ content).');
+        triggerPageBlock('NSFW Subreddit detected (18+ content).');
         return;
       }
+    }
+
+    // Filter individual posts if Strict Mode is active
+    if (settings.strictMode) {
+      filterFeedPosts();
     }
 
     // D. Check inside Web Components / Shadow DOM
