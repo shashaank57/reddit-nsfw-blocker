@@ -145,7 +145,16 @@
     return match ? match[1].toLowerCase() : null;
   }
 
+  const SFW_WHITELIST_SUBS = ['nofap', 'pornfree', 'semenretention', 'selfimprovement', 'addiction'];
+
+  function isSFWWhitelistedSub() {
+    const sub = extractSubredditName(window.location.pathname);
+    return sub && SFW_WHITELIST_SUBS.includes(sub.toLowerCase());
+  }
+
   function checkURLAndAPI() {
+    if (isSFWWhitelistedSub()) return;
+
     const pathname = window.location.pathname.toLowerCase();
 
     // A. Check custom blocked subreddits from user settings
@@ -177,6 +186,13 @@
 
   function scanPage() {
     if (pageBlocked || !settings.enabled) return;
+
+    if (isSFWWhitelistedSub()) {
+      if (settings.strictMode) {
+        filterFeedPosts();
+      }
+      return;
+    }
 
     // A. Check Meta Tags in <head>
     const nsfwMeta = document.querySelector(
@@ -235,8 +251,7 @@
       '.side .over18',
       '.interstitial.over18',
       'div.interstitial',
-      'p.nsfw-warning',
-      'a[href*="over18"]'
+      'p.nsfw-warning'
     ];
 
     const pathname = window.location.pathname.toLowerCase();
@@ -258,11 +273,7 @@
       'shreddit-post[is-nsfw="true"]',
       '.thing.over18',
       '.thing.nsfw',
-      '.over18.link',
-      '.title .nsfw-stamp',
-      'p.title .nsfw-stamp',
-      'span.nsfw-stamp',
-      'span.nsfw'
+      '.over18.link'
     );
 
     for (const selector of pageNSFWSelectors) {
