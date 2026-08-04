@@ -5,9 +5,9 @@
   "main": "background.js",
   "scripts": {
     "test": "node tests/test-runner.js",
-    "build": "node build.js",
-    "generate-icons": "node render-pro-icon.js",
-    "generate-experimental": "node render-experimental-icon.js"
+    "build": "node scripts/build.js",
+    "generate-icons": "node scripts/render-pro-icon.js",
+    "generate-experimental": "node scripts/render-experimental-icon.js"
   },
   "keywords": [
     "reddit",
