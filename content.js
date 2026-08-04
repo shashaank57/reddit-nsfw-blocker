@@ -240,24 +240,30 @@
     ];
 
     const pathname = window.location.pathname.toLowerCase();
-    const isSearchOrFeed = pathname === '/' || pathname.includes('/search') || pathname.includes('/r/all') || pathname.includes('/r/popular');
+    const isSearchOrFeed = pathname === '/' || pathname.includes('/search') || pathname.includes('/r/all') || pathname.includes('/r/popular') || pathname.startsWith('/user/');
+
+    // If on a feed or search page, do not trigger full page block. Instead, filter individual search/feed posts.
+    if (isSearchOrFeed) {
+      if (settings.strictMode) {
+        filterFeedPosts();
+      }
+      return;
+    }
 
     // If viewing a dedicated post or subreddit page (not a feed), check for dedicated post NSFW badges
-    if (!isSearchOrFeed) {
-      pageNSFWSelectors.push(
-        'shreddit-post[nsfw]',
-        'shreddit-post[is-nsfw]',
-        'shreddit-post[over18]',
-        'shreddit-post[is-nsfw="true"]',
-        '.thing.over18',
-        '.thing.nsfw',
-        '.over18.link',
-        '.title .nsfw-stamp',
-        'p.title .nsfw-stamp',
-        'span.nsfw-stamp',
-        'span.nsfw'
-      );
-    }
+    pageNSFWSelectors.push(
+      'shreddit-post[nsfw]',
+      'shreddit-post[is-nsfw]',
+      'shreddit-post[over18]',
+      'shreddit-post[is-nsfw="true"]',
+      '.thing.over18',
+      '.thing.nsfw',
+      '.over18.link',
+      '.title .nsfw-stamp',
+      'p.title .nsfw-stamp',
+      'span.nsfw-stamp',
+      'span.nsfw'
+    );
 
     for (const selector of pageNSFWSelectors) {
       if (document.querySelector(selector)) {
