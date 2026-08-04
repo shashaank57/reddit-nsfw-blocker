@@ -1,0 +1,58 @@
+{
+  "manifest_version": 3,
+  "name": "Reddit NSFW Blocker",
+  "version": "1.0.0",
+  "description": "Block NSFW subreddits, posts, and adult content on Reddit for Chrome and Firefox.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "*://*.reddit.com/*"
+  ],
+  "host_permissions": [
+    "*://*.reddit.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.reddit.com/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_start"
+    }
+  ],
+  "icons": {
+    "16": "icons-experimental/icon16.png",
+    "32": "icons-experimental/icon32.png",
+    "48": "icons-experimental/icon48.png",
+    "64": "icons-experimental/icon64.png",
+    "128": "icons-experimental/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Reddit NSFW Blocker",
+    "default_icon": {
+      "16": "icons-experimental/icon16.png",
+      "32": "icons-experimental/icon32.png",
+      "48": "icons-experimental/icon48.png",
+      "64": "icons-experimental/icon64.png",
+      "128": "icons-experimental/icon128.png"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["blocked.html", "content.css"],
+      "matches": ["*://*.reddit.com/*"]
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "reddit-nsfw-blocker@extension.local",
+      "strict_min_version": "109.0"
+    }
+  }
+}

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reddit NSFW Blocker</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="header">
+    <div class="brand">
+      <div class="logo">
+        <img src="../icons-experimental/icon64.png" width="26" height="26" alt="Reddit NSFW Blocker Logo">
+      </div>
+      <div>
+        <h1>Reddit NSFW Blocker</h1>
+        <span class="version">v1.0.0</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Master Toggle -->
+    <div class="card toggle-card">
+      <div class="info">
+        <span class="title">Protection Status</span>
+        <span class="desc" id="status-desc">Blocker is active</span>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="toggle-enabled" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <!-- Mode Options -->
+    <div class="card">
+      <div class="setting-row">
+        <div class="info">
+          <span class="title">Feed Filter (Strict Mode)</span>
+          <span class="desc">Hide individual NSFW posts in feeds like /r/all or search</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="toggle-strict">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Custom Blocklist -->
+    <div class="card">
+      <span class="title">Custom Blocked Subreddits</span>
+      <p class="desc">Add subreddits to block manually (e.g. <code>nsfw_memes</code>)</p>
+      
+      <div class="input-group">
+        <input type="text" id="subreddit-input" placeholder="Enter subreddit name...">
+        <button id="add-btn">Add</button>
+      </div>
+
+      <div class="tag-container" id="sub-tags">
+        <!-- Tags injected dynamically -->
+      </div>
+    </div>
+
+    <!-- Feature Requests & Bug Reports Form -->
+    <div class="card feedback-card">
+      <div class="support-content">
+        <div class="support-info">
+          <span class="title">🐛 Feature Requests & Bug Reports</span>
+          <span class="desc">Submit suggestions or report issues</span>
+        </div>
+        <a href="https://forms.gle/i22AGCbZydYm2rZB7" target="_blank" class="feedback-btn" id="feedback-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span>Form ↗</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Support / Ko-fi -->
+    <div class="card support-card">
+      <div class="support-content">
+        <div class="support-info">
+          <span class="title">💖 Support</span>
+          <span class="desc">Donate on Ko-fi to support development</span>
+        </div>
+        <a href="https://ko-fi.com/shashaanksrivastava" target="_blank" class="donate-btn" id="donate-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+          <span>Donate</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="card stats-card">
+      <div class="stat-item">
+        <span class="stat-number" id="block-count">0</span>
+        <span class="stat-label">Total Blocks Triggered</span>
+      </div>
+      <button id="reset-stats-btn" class="text-btn">Reset Count</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

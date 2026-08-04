@@ -1,0 +1,20 @@
+{
+  "name": "reddit-nsfw-blocker",
+  "version": "1.0.0",
+  "description": "Block NSFW subreddits, posts, and adult content on Reddit for Chrome and Firefox.",
+  "main": "background.js",
+  "scripts": {
+    "test": "node tests/test-runner.js",
+    "generate-icons": "node render-pro-icon.js",
+    "generate-experimental": "node render-experimental-icon.js"
+  },
+  "keywords": [
+    "reddit",
+    "nsfw",
+    "blocker",
+    "chrome-extension",
+    "firefox-extension"
+  ],
+  "author": "",
+  "license": "MIT"
+}
