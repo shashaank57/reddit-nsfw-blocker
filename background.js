@@ -71,12 +71,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           return;
         }
 
+        // Exclude recovery subreddits that mention NSFW in their SFW description
+        const SFW_WHITELIST = ['nofap', 'pornfree', 'semenretention', 'selfimprovement'];
+        if (SFW_WHITELIST.includes(sub)) {
+          subCache.set(sub, false);
+          sendResponse({ isNSFW: false });
+          return;
+        }
+
         const data = await res.json();
         const isNSFW = Boolean(
           data?.data?.over18 ||
           data?.data?.over_18 ||
-          data?.data?.whitelist_status === 'promo_adult_nsfw' ||
-          (data?.data?.description && data?.data?.description.toLowerCase().includes('nsfw'))
+          data?.data?.whitelist_status === 'promo_adult_nsfw'
         );
 
         subCache.set(sub, isNSFW);
