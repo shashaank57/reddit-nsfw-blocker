@@ -6,12 +6,12 @@
 }
 
 body {
-  width: 340px;
+  width: 360px;
   background-color: #0d1117;
   color: #c9d1d9;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: 13px;
-  line-height: 1.4;
+  font-size: 14px;
+  line-height: 1.45;
   overflow: hidden;
   user-select: none;
 }
@@ -30,8 +30,8 @@ body {
 }
 
 .logo {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 6px;
   background-color: rgba(255, 69, 0, 0.12);
   display: flex;
@@ -42,8 +42,8 @@ body {
 }
 
 .logo img {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   object-fit: contain;
   display: block;
 }
@@ -56,14 +56,14 @@ body {
 }
 
 h1 {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: #f0f6fc;
   letter-spacing: -0.2px;
 }
 
 .version-badge {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   color: #8b949e;
   background-color: #21262d;
@@ -113,13 +113,13 @@ h1 {
 .row-title {
   font-weight: 600;
   color: #f0f6fc;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .row-desc {
-  font-size: 11px;
+  font-size: 12px;
   color: #8b949e;
-  line-height: 1.3;
+  line-height: 1.35;
 }
 
 /* Section Row for Blocklist */
@@ -143,9 +143,9 @@ h1 {
   background-color: #0d1117;
   border: 1px solid #30363d;
   border-radius: 6px;
-  padding: 6px 10px;
+  padding: 7px 10px;
   color: #f0f6fc;
-  font-size: 11px;
+  font-size: 12px;
   outline: none;
   transition: border-color 0.15s ease;
 }
@@ -158,10 +158,10 @@ h1 {
   background-color: #21262d;
   color: #c9d1d9;
   border: 1px solid #30363d;
-  padding: 6px 12px;
+  padding: 7px 14px;
   border-radius: 6px;
   font-weight: 600;
-  font-size: 11px;
+  font-size: 12px;
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
@@ -176,9 +176,9 @@ h1 {
 .tag-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 6px;
   margin-top: 6px;
-  max-height: 72px;
+  max-height: 80px;
   overflow-y: auto;
 }
 
@@ -195,9 +195,9 @@ h1 {
   background-color: #0d1117;
   border: 1px solid #30363d;
   color: #c9d1d9;
-  padding: 2px 8px;
+  padding: 3px 8px;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: 12px;
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -207,7 +207,7 @@ h1 {
   cursor: pointer;
   color: #8b949e;
   font-weight: bold;
-  font-size: 12px;
+  font-size: 13px;
   transition: color 0.15s ease;
 }
 
@@ -218,7 +218,7 @@ h1 {
 /* Stats Row */
 .stat-row {
   background-color: #161b22;
-  padding: 8px 12px;
+  padding: 10px 12px;
 }
 
 .stat-info {
@@ -228,13 +228,13 @@ h1 {
 }
 
 .stat-number {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #ff4500;
 }
 
 .stat-label {
-  font-size: 11px;
+  font-size: 12px;
   color: #8b949e;
 }
 
@@ -242,7 +242,7 @@ h1 {
   background: none;
   border: none;
   color: #8b949e;
-  font-size: 11px;
+  font-size: 12px;
   cursor: pointer;
   padding: 2px 4px;
   border-radius: 4px;
@@ -257,8 +257,8 @@ h1 {
 .switch {
   position: relative;
   display: inline-block;
-  width: 36px;
-  height: 20px;
+  width: 38px;
+  height: 22px;
   flex-shrink: 0;
 }
 
@@ -284,8 +284,8 @@ h1 {
 .slider:before {
   position: absolute;
   content: "";
-  height: 14px;
-  width: 14px;
+  height: 16px;
+  width: 16px;
   left: 2px;
   bottom: 2px;
   background-color: #8b949e;
@@ -319,9 +319,9 @@ input:disabled + .slider {
   background-color: #161b22;
   border: 1px solid #30363d;
   color: #8b949e;
-  padding: 7px 10px;
+  padding: 8px 10px;
   border-radius: 6px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   text-decoration: none;
   display: inline-flex;
