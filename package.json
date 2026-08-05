@@ -1,6 +1,6 @@
 {
   "name": "reddit-nsfw-blocker",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Block NSFW subreddits, posts, and adult content on Reddit for Chrome and Firefox.",
   "main": "background.js",
   "scripts": {
