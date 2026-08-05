@@ -335,9 +335,14 @@
       elements.forEach((el) => {
         // Target ONLY the individual post, community, or profile search result card unit, never the whole feed wrapper
         const postCard = el.closest(
-          'shreddit-post, article, .thing, .link, div[data-testid="post-container"], [data-testid="search-post-unit"], [data-testid="search-sdui-post"], [data-testid="search-community"], [data-testid="search-author"], search-telemetry-tracker[view-events^="search/view"], div[data-thingid^="t3_"], div[data-fullname^="t3_"]'
+          'shreddit-post, article, .thing.link, div[data-testid="post-container"], [data-testid="search-post-unit"], [data-testid="search-sdui-post"], [data-testid="search-community"], [data-testid="search-author"], search-telemetry-tracker[view-events^="search/view"], div[data-thingid^="t3_"], div[data-fullname^="t3_"]'
         );
         if (postCard && !postCard.classList.contains('rnb-hidden-post')) {
+          // Guard: Ensure postCard is an individual unit item, never an outer main feed wrapper
+          const tag = postCard.tagName.toUpperCase();
+          if (tag === 'MAIN' || tag === 'BODY' || postCard.id === 'main-content' || postCard.id === 'siteTable' || postCard.classList.contains('shreddit-feed') || postCard.classList.contains('feed-container')) {
+            return;
+          }
           postCard.classList.add('rnb-hidden-post');
 
           // Handle divider lines (<hr> or .list-divider-line) to prevent double dividers or missing dividers
@@ -414,7 +419,7 @@
         <div class="rnb-icon-container">
           <img src="${logoUrl}" width="52" height="52" alt="Reddit NSFW Blocker Logo">
         </div>
-        <h1>Subreddit Restricted</h1>
+        <h1>Stay Focused • Content Blocked</h1>
         <p class="rnb-reason-desc"></p>
         <div class="rnb-btn-group">
           <a href="https://www.reddit.com/" class="rnb-btn rnb-btn-primary">

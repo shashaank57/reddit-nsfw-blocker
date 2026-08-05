@@ -5,44 +5,46 @@ const { execSync } = require('child_process');
 const ROOT_DIR = path.join(__dirname, '..');
 const SRC_DIR = path.join(ROOT_DIR, 'src');
 const DIST_DIR = path.join(ROOT_DIR, 'dist');
+const STAGE_DIR = path.join(DIST_DIR, 'staging');
 
 function log(msg) {
   console.log(`[BUILD] ${msg}`);
 }
 
-function build() {
-  log('Starting build process...');
+function copyRecursiveSync(src, dest) {
+  const exists = fs.existsSync(src);
+  const stats = exists && fs.statSync(src);
+  const isDirectory = exists && stats.isDirectory();
 
-  // Step 1: Read manifest version from src/manifest.json
-  const manifestPath = path.join(SRC_DIR, 'manifest.json');
-  if (!fs.existsSync(manifestPath)) {
-    throw new Error('src/manifest.json not found!');
+  if (isDirectory) {
+    if (!fs.existsSync(dest)) {
+      fs.mkdirSync(dest, { recursive: true });
+    }
+    fs.readdirSync(src).forEach((childItemName) => {
+      copyRecursiveSync(
+        path.join(src, childItemName),
+        path.join(dest, childItemName)
+      );
+    });
+  } else if (exists) {
+    const destDir = path.dirname(dest);
+    if (!fs.existsSync(destDir)) {
+      fs.mkdirSync(destDir, { recursive: true });
+    }
+    fs.copyFileSync(src, dest);
   }
-  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-  const version = manifest.version || '1.0.0';
-  log(`Detected extension version: v${version}`);
+}
 
-  // Step 2: Ensure dist directory exists
-  if (!fs.existsSync(DIST_DIR)) {
-    fs.mkdirSync(DIST_DIR, { recursive: true });
-  }
-
-  // Step 3: Create Zip Archive directly from src/ with POSIX forward slashes (/)
-  const firefoxZipName = `reddit-nsfw-blocker-v${version}-firefox.zip`;
-  const firefoxZipPath = path.join(DIST_DIR, firefoxZipName);
-
-  log(`Compressing src/ files with POSIX forward slashes into ${firefoxZipName}...`);
-
+function createZipArchive(stageDir, outputZipPath) {
   if (process.platform === 'win32') {
-    // PowerShell .NET script to explicitly normalize zip entry paths using '/'
     const psScript = [
       `Add-Type -AssemblyName System.IO.Compression;`,
       `Add-Type -AssemblyName System.IO.Compression.FileSystem;`,
-      `if (Test-Path '${firefoxZipPath}') { Remove-Item '${firefoxZipPath}' -Force };`,
-      `$zip = [System.IO.Compression.ZipFile]::Open('${firefoxZipPath}', [System.IO.Compression.ZipArchiveMode]::Create);`,
-      `$files = Get-ChildItem -Path '${SRC_DIR}' -Recurse -File;`,
+      `if (Test-Path '${outputZipPath}') { Remove-Item '${outputZipPath}' -Force };`,
+      `$zip = [System.IO.Compression.ZipFile]::Open('${outputZipPath}', [System.IO.Compression.ZipArchiveMode]::Create);`,
+      `$files = Get-ChildItem -Path '${stageDir}' -Recurse -File;`,
       `foreach ($file in $files) {`,
-      `  $relPath = $file.FullName.Substring('${SRC_DIR}'.Length + 1).Replace('\\', '/');`,
+      `  $relPath = $file.FullName.Substring('${stageDir}'.Length + 1).Replace('\\', '/');`,
       `  [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $file.FullName, $relPath);`,
       `};`,
       `$zip.Dispose();`
@@ -50,20 +52,64 @@ function build() {
 
     execSync(`powershell -Command "${psScript}"`, { stdio: 'inherit' });
   } else {
-    // Unix zip command
-    execSync(`cd "${SRC_DIR}" && zip -r "${firefoxZipPath}" .`, { stdio: 'inherit' });
+    execSync(`cd "${stageDir}" && zip -r "${outputZipPath}" .`, { stdio: 'inherit' });
   }
+}
 
-  // Step 4: Verify output zip file
-  if (fs.existsSync(firefoxZipPath)) {
-    const stats = fs.statSync(firefoxZipPath);
-    const sizeKb = (stats.size / 1024).toFixed(2);
-    log(`Success! Build artifact created:`);
-    log(`  --> Location: ${firefoxZipPath}`);
-    log(`  --> Size: ${sizeKb} KB`);
-  } else {
-    throw new Error('Zip artifact creation failed!');
+function build() {
+  log('Starting build process...');
+
+  const baseManifestPath = path.join(SRC_DIR, 'manifest.json');
+  if (!fs.existsSync(baseManifestPath)) {
+    throw new Error('src/manifest.json not found!');
   }
+  const baseManifest = JSON.parse(fs.readFileSync(baseManifestPath, 'utf8'));
+  const version = baseManifest.version || '1.0.0';
+  log(`Detected extension version: v${version}`);
+
+  if (fs.existsSync(DIST_DIR)) {
+    fs.rmSync(DIST_DIR, { recursive: true, force: true });
+  }
+  fs.mkdirSync(DIST_DIR, { recursive: true });
+
+  // 1. Firefox Build Target
+  log('Building Firefox release package...');
+  const ffStage = path.join(STAGE_DIR, 'firefox');
+  copyRecursiveSync(SRC_DIR, ffStage);
+  
+  // Firefox Manifest Optimization
+  const ffManifest = JSON.parse(JSON.stringify(baseManifest));
+  ffManifest.background = { scripts: ['background.js'] };
+  fs.writeFileSync(path.join(ffStage, 'manifest.json'), JSON.stringify(ffManifest, null, 2));
+
+  const firefoxZipName = `reddit-nsfw-blocker-v${version}-firefox.zip`;
+  const firefoxZipPath = path.join(DIST_DIR, firefoxZipName);
+  createZipArchive(ffStage, firefoxZipPath);
+
+  const ffStats = fs.statSync(firefoxZipPath);
+  log(`  --> Firefox Package: ${firefoxZipPath} (${(ffStats.size / 1024).toFixed(2)} KB)`);
+
+  // 2. Chrome Build Target
+  log('Building Chrome release package...');
+  const chromeStage = path.join(STAGE_DIR, 'chrome');
+  copyRecursiveSync(SRC_DIR, chromeStage);
+
+  // Chrome Manifest Optimization (service_worker strictly for Chrome MV3)
+  const chromeManifest = JSON.parse(JSON.stringify(baseManifest));
+  chromeManifest.background = { service_worker: 'background.js' };
+  delete chromeManifest.browser_specific_settings; // Exclude Gecko-specific settings for Chrome
+  fs.writeFileSync(path.join(chromeStage, 'manifest.json'), JSON.stringify(chromeManifest, null, 2));
+
+  const chromeZipName = `reddit-nsfw-blocker-v${version}-chrome.zip`;
+  const chromeZipPath = path.join(DIST_DIR, chromeZipName);
+  createZipArchive(chromeStage, chromeZipPath);
+
+  const chromeStats = fs.statSync(chromeZipPath);
+  log(`  --> Chrome Package: ${chromeZipPath} (${(chromeStats.size / 1024).toFixed(2)} KB)`);
+
+  // Cleanup staging folder
+  fs.rmSync(STAGE_DIR, { recursive: true, force: true });
+  log('Build completed successfully!');
 }
 
 try {
