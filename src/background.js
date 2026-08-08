@@ -87,5 +87,50 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     return true; // Keep channel open for async response
   }
+
+  if (message.action === 'checkUserNSFW') {
+    const user = (message.username || '').toLowerCase();
+    if (!user) {
+      sendResponse({ isNSFW: false });
+      return true;
+    }
+
+    if (subCache.has(`u_${user}`)) {
+      sendResponse({ isNSFW: subCache.get(`u_${user}`) });
+      return true;
+    }
+
+    fetch(`https://www.reddit.com/user/${user}/about.json`, {
+      headers: { 'Accept': 'application/json, text/plain, */*' }
+    })
+      .then(async (res) => {
+        if (res.status === 403 || res.status === 401 || res.redirected || (res.url && res.url.includes('over18'))) {
+          subCache.set(`u_${user}`, true);
+          sendResponse({ isNSFW: true });
+          return;
+        }
+
+        if (!res.ok) {
+          subCache.set(`u_${user}`, false);
+          sendResponse({ isNSFW: false });
+          return;
+        }
+
+        const data = await res.json();
+        const isNSFW = Boolean(
+          data?.data?.over_18 ||
+          data?.data?.is_nsfw ||
+          data?.data?.subreddit?.over_18
+        );
+
+        subCache.set(`u_${user}`, isNSFW);
+        sendResponse({ isNSFW });
+      })
+      .catch((err) => {
+        sendResponse({ isNSFW: false, error: err.message });
+      });
+
+    return true;
+  }
 });
 
