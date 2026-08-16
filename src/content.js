@@ -171,19 +171,7 @@
       }
     }
 
-    // B. Check User Profile 18+ status via background service worker
-    const currentUser = extractUsername(pathname);
-    if (currentUser) {
-      chrome.runtime.sendMessage(
-        { action: 'checkUserNSFW', username: currentUser },
-        (response) => {
-          if (chrome.runtime.lastError) return;
-          if (response && response.isNSFW) {
-            triggerPageBlock(`User Profile 'u/${currentUser}' is an 18+ adult profile.`);
-          }
-        }
-      );
-    }
+
 
     // C. Check Reddit Subreddit official API via background service worker
     const currentSub = extractSubredditName(pathname);
@@ -252,18 +240,12 @@
       'shreddit-subreddit-header[nsfw]',
       'shreddit-subreddit-header[is-nsfw]',
       'shreddit-subreddit-header[is-nsfw="true"]',
-      'shreddit-profile-header[nsfw]',
-      'shreddit-profile-header[is-nsfw]',
       'shreddit-profile-header[is-nsfw="true"]',
       'shreddit-profile-header[over18]',
       'button[data-testid="nsfw-profile-icon-button"]',
       'svg[data-testid="nsfw-profile-icon"]',
-      'svg[aria-label="User has an NSFW profile"]',
-      'svg[aria-label*="NSFW"]',
-      '[data-testid="profile-main"] svg[icon-name="nsfw-fill"]',
       'shreddit-experience-tree[over18]',
       'faceplate-modal[id*="over18"]',
-      'faceplate-tracker[data-nsfw="true"]',
       'button[data-testid="over18-continue-button"]',
       'body.over18',
       'body.over18-page',
@@ -292,7 +274,7 @@
     // Check if on an 18+ User Profile main feed (e.g. /user/username/)
     if (isUserProfile && !isSinglePostPage) {
       const userNSFWHeader = document.querySelector(
-        'button[data-testid="nsfw-profile-icon-button"], svg[data-testid="nsfw-profile-icon"], svg[aria-label="User has an NSFW profile"], svg[aria-label*="NSFW"], shreddit-profile-header[is-nsfw="true"], shreddit-profile-header[nsfw]'
+        'button[data-testid="nsfw-profile-icon-button"], svg[data-testid="nsfw-profile-icon"], shreddit-profile-header[is-nsfw="true"], shreddit-profile-header[over18]'
       );
       if (userNSFWHeader) {
         triggerPageBlock(getNSFWBlockReason(pathname));
@@ -314,22 +296,37 @@
 
     // On single post pages (subreddit post threads or user profile comment threads)
     if (isSinglePostPage) {
-      const isAdultNotice = document.querySelector(
-        '#over18-notice, .over18-interstitial, form[action*="over18"], button[data-testid="over18-continue-button"], p.nsfw-warning, faceplate-modal[id*="over18"], .expando-gate--nsfw, .thing[data-nsfw="true"], .thing.over18'
+      const isPostNSFW = document.querySelector(
+        'shreddit-content-tags[nsfw], ' +
+        'shreddit-content-tags[is-nsfw], ' +
+        '.text-category-nsfw, ' +
+        'span.text-category-nsfw, ' +
+        '[icon-name="nsfw-fill"], ' +
+        'shreddit-post[nsfw], ' +
+        'shreddit-post[is-nsfw="true"], ' +
+        'shreddit-post[over18], ' +
+        '#over18-notice, ' +
+        'form#over18-notice, ' +
+        '.over18-interstitial, ' +
+        '[data-testid="content-gate"], ' +
+        'reddit-interstitial, ' +
+        'faceplate-modal[id*="over18"], ' +
+        'button[data-testid="over18-continue-button"], ' +
+        '.expando-gate--nsfw, ' +
+        '.thing[data-nsfw="true"], ' +
+        '.thing.over18, ' +
+        '.thing.nsfw, ' +
+        '[data-testid="post-container"] [data-tag="nsfw"]'
       ) || (document.body && document.body.classList.contains('over18'));
 
-      if (isAdultNotice) {
-        triggerPageBlock(getNSFWBlockReason(pathname));
+      if (isPostNSFW) {
+        triggerPageBlock('This specific post is marked 18+ NSFW.');
         return;
       }
 
       const subHeader = document.querySelector('shreddit-subreddit-header');
       if (subHeader && (subHeader.hasAttribute('is-nsfw') || subHeader.getAttribute('is-nsfw') === 'true' || subHeader.hasAttribute('nsfw'))) {
         triggerPageBlock(getNSFWBlockReason(pathname));
-        return;
-      }
-
-      if (!settings.strictMode) {
         return;
       }
     }

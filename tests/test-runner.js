@@ -89,8 +89,8 @@ test('Upgrades generic reason when specific API reason arrives', () => {
 console.log('\n📦 Test Suite 3: Subreddit API Response Classification');
 
 function classifyAPIResponse(status, redirected, url, json) {
-  if (status === 403 || status === 401 || redirected || (url && url.includes('over18'))) {
-    return true; // NSFW / Restricted
+  if (redirected || (url && url.includes('over18'))) {
+    return true; // Explicit adult redirect
   }
   if (status !== 200) {
     return false;
@@ -102,8 +102,8 @@ function classifyAPIResponse(status, redirected, url, json) {
   );
 }
 
-test('HTTP 403 Forbidden is classified as NSFW/Restricted', () => {
-  assert.strictEqual(classifyAPIResponse(403, false, 'https://www.reddit.com/r/squeezequeens/about.json', null), true);
+test('Explicit redirect to over18 is classified as NSFW/Restricted', () => {
+  assert.strictEqual(classifyAPIResponse(302, true, 'https://www.reddit.com/over18?dest=...', null), true);
 });
 
 test('HTTP 200 OK with over18: true is classified as NSFW', () => {

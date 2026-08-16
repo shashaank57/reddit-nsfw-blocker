@@ -5,6 +5,7 @@
   "main": "background.js",
   "scripts": {
     "test": "node tests/test-runner.js",
+    "test:browser": "node tests/e2e-browser.test.js",
     "build": "node scripts/build.js",
     "generate-icons": "node scripts/render-pro-icon.js",
     "generate-experimental": "node scripts/render-experimental-icon.js"
@@ -17,5 +18,8 @@
     "firefox-extension"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "puppeteer": "^25.7.0"
+  }
 }

@@ -58,14 +58,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       headers: { 'Accept': 'application/json, text/plain, */*' }
     })
       .then(async (res) => {
-        // If Reddit returns 403 Forbidden, 401, or redirects to an adult warning page, it's NSFW / Restricted!
-        if (res.status === 403 || res.status === 401 || res.redirected || (res.url && res.url.includes('over18'))) {
+        // If Reddit explicitly redirects to an adult/over18 warning page
+        if (res.redirected || (res.url && res.url.includes('over18'))) {
           subCache.set(sub, true);
           sendResponse({ isNSFW: true });
           return;
         }
 
         if (!res.ok) {
+          // Unauthenticated fetch blocked by Reddit (e.g. 403/429) -> let DOM selectors verify
           subCache.set(sub, false);
           sendResponse({ isNSFW: false });
           return;
